@@ -1,0 +1,46 @@
+---
+- name: Standardise and Deploy Fedora Lane Web Fleet
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Ensure Apache HTTP Server is installed
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+
+    - name: Deploy customized Fedora Lane landing page
+      ansible.builtin.copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Fedora Lane Staging</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; margin-top: 100px; background-color: #f4f6f8; color: #151515; }
+              .card { background: white; max-width: 650px; margin: 0 auto; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+              h1 { color: #ee0000; margin-bottom: 8px; }
+              p { color: #6a6e73; font-size: 1.1rem; }
+              .badge { display: inline-block; padding: 6px 12px; background: #e7f1fa; color: #0066cc; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <span class="badge">Enterprise Deployment Verified</span>
+              <h1>Fedora Lane Application Portal</h1>
+              <p>Staged and configured across fleet nodes via Red Hat Ansible Automation Platform.</p>
+              <hr style="border: none; border-top: 1px solid #d2d2d2; margin: 24px 0;">
+              <small>Node: {{ ansible_hostname }} | Status: Active</small>
+            </div>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: '0644'
+
+    - name: Ensure Apache service is enabled and running
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
