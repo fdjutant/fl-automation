@@ -9,9 +9,9 @@
         name: httpd
         state: present
 
-    - name: Deploy dynamic Fedora Lane landing page
-      ansible.builtin.template:
-        src: index.html.j2
+    - name: Deploy Fedora Lane landing page
+      ansible.builtin.copy:
+        src: index.html
         dest: /var/www/html/index.html
         owner: apache
         group: apache
